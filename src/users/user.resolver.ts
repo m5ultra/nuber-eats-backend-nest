@@ -6,16 +6,31 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto'
 
-@Resolver((of) => User)
+@Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Query((returns) => Boolean)
+  @Query(() => Boolean)
   hi() {
     console.log('hi')
   }
-  @Mutation((returns) => CreateAccountOutput)
-  createAccount(@Args('input') createdAccountInput: CreateAccountInput) {
-    return this.usersService.createAccount(createdAccountInput)
+  @Mutation(() => CreateAccountOutput)
+  async createAccount(
+    @Args('input') createdAccountInput: CreateAccountInput,
+  ): Promise<CreateAccountOutput> {
+    try {
+      const error = await this.usersService.createAccount(createdAccountInput)
+      if (error) {
+        return {
+          ok: false,
+          error,
+        }
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      }
+    }
   }
 }
