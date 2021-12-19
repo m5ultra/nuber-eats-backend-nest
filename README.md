@@ -1,73 +1,140 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+### 启动mysql
+```shell
+#启动MySQL服务
+sudo /usr/local/MySQL/support-files/mysql.server start
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+#停止MySQL服务
+sudo /usr/local/mysql/support-files/mysql.server stop
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+#重启MySQL服务
+sudo /usr/local/mysql/support-files/mysql.server restart
+```
+```shell
+mongod --dbpath /usr/local/var/mongodb --logpath /usr/local/var/log/mongodb/mongo.log --fork
+```
+## Nest Study
 
-## Description
+### 初始化工程
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
+```shell
+nest new nest-project-name
 ```
 
-## Running the app
+### 安装swagger ---- 通过装饰器来快速生成开发文档的方式 （可选）
 
-```bash
-# development
-$ npm run start
+```shell
+yarn add @nestjs/swagger
+yarn add swagger-ui-express
+``` 
 
-# watch mode
-$ npm run start:dev
+[swagger教程](https://cloud.tencent.com/developer/section/1490222)
 
-# production mode
-$ npm run start:prod
+### 安装 dotenv
+
+```shell
+yarn add  @nestjs/config
+yarn add  cross-env
+``` 
+
+> @nestjs/config内部集成了dotenv
+>
+> cross-env是一个nodejs 跨平台的插件
+
+#### 使用步骤
+
+1.创建对应文件在根目录下 .env.development
+
+```.env.development
+DB_NAME = db.sqlite
 ```
 
-## Test
+.env.test
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```.env.test
+DB_NAME = test.sqlite
 ```
 
-## Support
+2. 修改启动指令如下：
+   ![配置环境]("https://github.com/scott8013/readme-images/blob/main/1.%E5%90%AF%E5%8A%A8%E5%B7%A5%E7%A8%8B%E6%8C%87%E4%BB%A4.png?raw=true")
+### 连接数据库
+```app.module.ts
+import { Module } from '@nestjs/common'
+import { AppController } from './app.controller'
+import { AppService } from './app.service'
+import { UserModule } from './user/user.module'
+import { MongooseModule } from '@nestjs/mongoose'
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+@Module({
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost/nest2', {
+      connectionName: 'nest2',
+    }),
+    MongooseModule.forRoot('mongodb://localhost/nest', {
+      connectionName: 'nest',
+    }),
+    UserModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
 
-## Stay in touch
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```user.module.ts
+import { Module } from '@nestjs/common'
+import { UserService } from './user.service'
+import { UserController } from './user.controller'
+import { User, UserSchema } from './schemas/user.schema'
+import { MongooseModule } from '@nestjs/mongoose'
 
-## License
+@Module({
+  imports: [
+    MongooseModule.forFeature(
+      [{ name: User.name, schema: UserSchema }],
+      'nest',
+    ),
+  ],
+  providers: [UserService],
+  controllers: [UserController],
+})
+export class UserModule {}
+```
 
-Nest is [MIT licensed](LICENSE).
+```user.service.ts
+import { Injectable } from '@nestjs/common'
+import { User, UserDocument } from './schemas/user.schema'
+import { InjectModel } from '@nestjs/mongoose'
+import { Model } from 'mongoose'
+import { UserDto } from './dtos/user-dto'
+
+@Injectable()
+export class UserService {
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async create(userDto: UserDto) {
+    return await this.userModel.create(userDto)
+  }
+}
+
+```
+
+### 参数校验
+// class-validator 生效的关键
+```ts
+  app.useGlobalPipes(new ValidationPipe())
+```
+```shell
+yarn add class-transformer class-validator
+```
+
+```main.ts
+  // class-validator 生效的关键
+  app.useGlobalPipes(new ValidationPipe())
+```
+创建dto文件
+
+controller使用
+### 循环依赖
+
+
