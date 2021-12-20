@@ -7,6 +7,7 @@ import * as Joi from 'joi'
 import { UsersModule } from './users/users.module'
 import { User } from './users/entities/user.entity'
 import { Restaurant } from './restaurants/entities/restaurants.entity'
+import { AuthModule } from './auth/auth.module';
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
   imports: [
@@ -42,6 +43,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
     }),
     RestaurantsModule,
     UsersModule,
+    AuthModule.forRoot(),
   ],
 })
 export class AppModule {}
