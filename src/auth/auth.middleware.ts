@@ -17,10 +17,6 @@ export class AuthMiddleware implements NestMiddleware {
       if (typeof decoded === 'object' && decoded.hasOwnProperty('id')) {
         try {
           req['user'] = await this.userService.findUserById(decoded['id'])
-          console.log(
-            await this.userService.findUserById(decoded['id']),
-            '9090',
-          )
         } catch (e) {}
       }
     }
