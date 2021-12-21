@@ -7,7 +7,7 @@ import * as Joi from 'joi'
 import { UsersModule } from './users/users.module'
 import { User } from './users/entities/user.entity'
 import { Restaurant } from './restaurants/entities/restaurants.entity'
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/auth.module'
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
   imports: [
@@ -22,7 +22,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
-        SECRET_KEY: Joi.string().required(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
     }),
     GraphQLModule.forRoot({
@@ -43,7 +43,9 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
     }),
     RestaurantsModule,
     UsersModule,
-    AuthModule.forRoot(),
+    AuthModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
+    }),
   ],
 })
 export class AppModule {}
