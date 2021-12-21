@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common'
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 import { RestaurantsModule } from './restaurants/restaurnats.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -8,6 +13,8 @@ import { UsersModule } from './users/users.module'
 import { User } from './users/entities/user.entity'
 import { Restaurant } from './restaurants/entities/restaurants.entity'
 import { AuthModule } from './auth/auth.module'
+import { AuthMiddleware } from './auth/auth.middleware'
+
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
   imports: [
@@ -27,6 +34,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      context: ({ req }) => ({ user: req['user'] }),
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -48,4 +56,10 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
     }),
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware)
+      .forRoutes({ path: '/graphql', method: RequestMethod.POST })
+  }
+}

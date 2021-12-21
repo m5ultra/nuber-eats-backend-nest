@@ -1,4 +1,4 @@
-import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { User } from './entities/user.entity'
 import { UsersService } from './user.service'
 import {
@@ -33,12 +33,21 @@ export class UsersResolver {
     }
   }
 
-  @Mutation((returns) => LoginOutput)
+  @Mutation(() => LoginOutput)
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     try {
       return this.usersService.login(loginInput)
     } catch (e) {
       return e
+    }
+  }
+
+  @Query(() => User)
+  me(@Context() { user }) {
+    if (!user) {
+      return
+    } else {
+      return user
     }
   }
 }
