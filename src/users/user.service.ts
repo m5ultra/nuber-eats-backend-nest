@@ -54,11 +54,6 @@ export class UsersService {
         }
       }
       const token = this.authService.sign(user.id)
-      await this.mailService.sendEmail(
-        'Test',
-        'test22222',
-        'ams9527@outlook.com',
-      )
       return {
         ok: true,
         token,
