@@ -5,11 +5,13 @@ import { Injectable } from '@nestjs/common'
 import { CreateAccountInput } from './dtos/create-account.dto'
 import { LoginInput } from './dtos/login.dto'
 import { AuthService } from '../auth/auth.service'
+import { MailService } from '../mail/mail.service'
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly authService: AuthService,
+    private readonly mailService: MailService,
   ) {}
 
   async createAccount({
@@ -52,6 +54,11 @@ export class UsersService {
         }
       }
       const token = this.authService.sign(user.id)
+      await this.mailService.sendEmail(
+        'Test',
+        'test22222',
+        'ams9527@outlook.com',
+      )
       return {
         ok: true,
         token,
