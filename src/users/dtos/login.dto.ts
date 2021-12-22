@@ -4,7 +4,7 @@ import { User } from '../entities/user.entity'
 
 @ObjectType()
 export class LoginOutput extends MutationOutputDto {
-  @Field((type) => String, { nullable: true })
+  @Field(() => String, { nullable: true })
   token?: string
 }
 
