@@ -20,8 +20,9 @@ export class MailService {
     form.append('subject', subject)
     form.append('to', to)
     form.append('template', template)
-    EmailVar.forEach((eVar) => form.append(eVar.key, eVar.value))
+    EmailVar.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value))
     try {
+      // TODO：发送邮件失败 401未授权 1。可以考虑阿里云邮件服务 2。或者使用 nest-study测试成功发送邮件的方案 配合redis 存储邮箱和验证码的key-value 配置定时任务 清空过期的key-value 实现邮箱验证功能
       await got(`https://api.mailgun.net/v3/${this.options.domain}/messages`, {
         method: 'POST',
         headers: {
@@ -31,8 +32,13 @@ export class MailService {
         },
         body: form,
       })
+      // 可以正常获取数据
+      // const res = await got('https://api.github.com/users/scott8013/repos', {
+      //   method: 'get',
+      // })
+      // console.log(res, '我的git仓库列表')
     } catch (e) {
-      console.log(e)
+      console.log(e, '~~sendEmail~~')
     }
   }
 

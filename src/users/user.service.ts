@@ -6,11 +6,14 @@ import { CreateAccountInput } from './dtos/create-account.dto'
 import { LoginInput } from './dtos/login.dto'
 import { AuthService } from '../auth/auth.service'
 import { MailService } from '../mail/mail.service'
+import { Verification } from './entities/verification.entity'
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly authService: AuthService,
+    @InjectRepository(Verification)
+    private readonly verifications: Repository<Verification>,
     private readonly mailService: MailService,
   ) {}
 
@@ -27,7 +30,18 @@ export class UsersService {
         // make error
         return [false, 'There is a user with the email already']
       }
-      await this.users.save(this.users.create({ email, role, password }))
+      const user = await this.users.save(
+        this.users.create({ email, role, password }),
+      )
+      const verification = await this.verifications.save(
+        this.verifications.create({
+          user,
+        }),
+      )
+      await this.mailService.sendVerificationEmail(
+        user.email,
+        verification.code,
+      )
       return [true]
     } catch (e) {
       return [false, '创建账户失败']

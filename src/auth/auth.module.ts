@@ -11,8 +11,8 @@ export class AuthModule {
       module: AuthModule,
       providers: [
         {
-          provide: CONFIG_OPTIONS,
           useValue: options,
+          provide: CONFIG_OPTIONS,
         },
         AuthService,
       ],

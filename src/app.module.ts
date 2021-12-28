@@ -15,6 +15,7 @@ import { Restaurant } from './restaurants/entities/restaurants.entity'
 import { AuthModule } from './auth/auth.module'
 import { AuthMiddleware } from './auth/auth.middleware'
 import { MailModule } from './mail/mail.module'
+import { Verification } from './users/entities/verification.entity'
 
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
@@ -47,7 +48,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Restaurant],
+      entities: [User, Restaurant, Verification],
       // synchronize: process.env.NODE_ENV !== 'prod',
       synchronize: false,
       // logging: process.env.NODE_ENV !== 'prod',
