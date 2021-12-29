@@ -1,6 +1,5 @@
 import { DynamicModule, Global, Module } from '@nestjs/common'
 import { MailService } from './mail.service'
-import { MailController } from './mail.controller'
 import { MailerModule } from '@nestjs-modules/mailer'
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter'
 import { join } from 'path'
@@ -40,7 +39,6 @@ export class MailModule {
         MailService,
       ],
       exports: [MailService],
-      controllers: [MailController],
     }
   }
 }

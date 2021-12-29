@@ -38,7 +38,6 @@ export class UsersService {
           user,
         }),
       )
-      console.log(verification)
       const {
         code,
         user: { email: mail },

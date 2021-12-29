@@ -6,12 +6,8 @@ export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendEmailCode(data: ISendEmailOptions) {
-    const { email, subject, sign } = data
-    let { code } = data
+    const { email, subject, sign, code } = data
     try {
-      if (!code) {
-        code = Math.random().toString().slice(-6)
-      }
       const date = new Date()
       const sendMailOptions: ISendMailOptions = {
         to: email,
