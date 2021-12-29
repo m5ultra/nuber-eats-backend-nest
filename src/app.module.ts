@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module'
 import { AuthMiddleware } from './auth/auth.middleware'
 import { Verification } from './users/entities/verification.entity'
 import { MailModule } from './mail/mail.module'
+import { Category } from './restaurants/entities/category.entity'
 
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
@@ -32,9 +33,6 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
         DB_PASSWORD: Joi.string().required(),
         DB_NAME: Joi.string().required(),
         PRIVATE_KEY: Joi.string().required(),
-        MAILGUN_API_KEY: Joi.string().required(),
-        MAILGUN_DOMAIN_NAME: Joi.string().required(),
-        MAILGUN_FROM_EMAIL: Joi.string().required(),
         QQ_FROM_EMAIL: Joi.string().required(),
         QQ_AUTHORIZATION_CODE: Joi.string().required(),
       }),
@@ -50,10 +48,10 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Restaurant, Verification],
+      entities: [User, Restaurant, Verification, Category],
       // synchronize: process.env.NODE_ENV !== 'prod',
       synchronize: false,
-      // logging: process.env.NODE_ENV !== 'prod',
+      logging: process.env.NODE_ENV !== 'prod',
       migrationsRun: false,
     }),
     RestaurantsModule,
