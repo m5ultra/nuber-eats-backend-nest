@@ -8,10 +8,10 @@ import { User } from './user.entity'
 @Entity()
 export class Verification extends CoreEntity {
   @Column()
-  @Field((type) => String)
+  @Field(() => String)
   code: string
 
-  @OneToOne((type) => User, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User
 
