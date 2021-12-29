@@ -10,14 +10,10 @@ import { AuthGuard } from '../guards/auth.guard'
 import { UseGuards } from '@nestjs/common'
 import { AuthUser } from '../guards/auth-user.decorator'
 import { UserProfileInput, UserProfileOut } from './dtos/user-profile.dto'
-import { MailService } from '../mail/mail.service'
 
 @Resolver(() => User)
 export class UsersResolver {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly mailService: MailService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
   @Mutation(() => CreateAccountOutput)
   async createAccount(
     @Args('input') createdAccountInput: CreateAccountInput,
@@ -32,7 +28,6 @@ export class UsersResolver {
           error,
         }
       }
-      await this.mailService.sendVerificationEmail('352671309@qq.com', '888888')
       return { ok }
     } catch (error) {
       return {

@@ -5,8 +5,8 @@ import { Injectable } from '@nestjs/common'
 import { CreateAccountInput } from './dtos/create-account.dto'
 import { LoginInput } from './dtos/login.dto'
 import { AuthService } from '../auth/auth.service'
-import { MailService } from '../mail/mail.service'
 import { Verification } from './entities/verification.entity'
+import { MailService } from '../mail/mail.service'
 @Injectable()
 export class UsersService {
   constructor(
@@ -38,10 +38,15 @@ export class UsersService {
           user,
         }),
       )
-      await this.mailService.sendVerificationEmail(
-        user.email,
-        verification.code,
-      )
+      console.log(verification)
+      const {
+        code,
+        user: { email: mail },
+      } = verification
+      await this.mailService.sendEmailCode({
+        code,
+        email: mail,
+      })
       return [true]
     } catch (e) {
       return [false, '创建账户失败']
