@@ -5,24 +5,13 @@ import { UsersService } from '../users/user.service'
 
 @Injectable()
 // 解析客户端返回token 通过token中用户🆔 查找用户信息 并把用户信息挂载到req对象上
+// TODO: 登录和注册不需要验证次中间件
 export class AuthMiddleware implements NestMiddleware {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    // body: {
-    //   query: 'mutation {\n' +
-    //   '  register(input: {email: "352671309@qq.com", role: Client, password: "www222888"}){\n' +
-    //   '    ok,\n' +
-    //   '    error\n' +
-    //   '  }\n' +
-    //   '}'
-    // },
-    const {
-      body: { query },
-    } = req
-    const mutation = JSON.parse(JSON.stringify(query))
     if ('authorization' in req.headers) {
       const token = req.headers['authorization'].trim().split(' ')[1]
       let decoded
