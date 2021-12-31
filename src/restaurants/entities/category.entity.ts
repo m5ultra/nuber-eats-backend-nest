@@ -9,15 +9,22 @@ import { Restaurant } from './restaurants.entity'
 @Entity()
 export class Category extends CoreEntity {
   @Field(() => String)
+  @Column({ unique: true })
   @IsString()
-  @Length(5, null, { message: '名字长度需要在5' })
-  @Column()
+  @Length(5, 50, { message: '名字长度需要在5-50之间' })
   name: string
 
-  @Field(() => String)
-  @Column()
+  @Field(() => String, { nullable: true })
+  @Column({
+    nullable: true,
+  })
   @IsString()
   coverImage: string
+
+  @Field()
+  @Column()
+  @IsString()
+  slug: string
 
   @Field(() => [Restaurant], { nullable: true })
   @OneToMany(() => Restaurant, (restaurant) => restaurant.category)

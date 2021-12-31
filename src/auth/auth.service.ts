@@ -9,7 +9,9 @@ export class AuthService {
     @Inject(CONFIG_OPTIONS) private readonly options: AuthModuleOptions,
   ) {}
   sign(userId: number): string {
-    return jwt.sign({ id: userId }, this.options.privateKey)
+    return jwt.sign({ id: userId }, this.options.privateKey, {
+      expiresIn: '5m',
+    })
   }
   verify(token: string) {
     return jwt.verify(token, this.options.privateKey)

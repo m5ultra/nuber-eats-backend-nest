@@ -39,6 +39,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
+      // 每次发送请求会先执行中间件 在执行此处的代码
       context: ({ req }) => ({ user: req['user'] }),
     }),
     TypeOrmModule.forRoot({

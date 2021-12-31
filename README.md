@@ -1,4 +1,5 @@
-### 启动mysql
+### 启动 mysql
+
 ```shell
 #启动MySQL服务
 sudo /usr/local/MySQL/support-files/mysql.server start
@@ -9,9 +10,18 @@ sudo /usr/local/mysql/support-files/mysql.server stop
 #重启MySQL服务
 sudo /usr/local/mysql/support-files/mysql.server restart
 ```
+
 ```shell
 mongod --dbpath /usr/local/var/mongodb --logpath /usr/local/var/log/mongodb/mongo.log --fork
 ```
+
+### mysql 关闭严格模式
+
+```shell
+/usr/local/MySQL/bin/mysql -u root -p -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';"
+/usr/local/mysql/bin/mysql -u root -p -e "SELECT @@GLOBAL.sql_mode;"
+```
+
 ## Nest Study
 
 ### 初始化工程
@@ -20,25 +30,25 @@ mongod --dbpath /usr/local/var/mongodb --logpath /usr/local/var/log/mongodb/mong
 nest new nest-project-name
 ```
 
-### 安装swagger ---- 通过装饰器来快速生成开发文档的方式 （可选）
+### 安装 swagger ---- 通过装饰器来快速生成开发文档的方式 （可选）
 
 ```shell
 yarn add @nestjs/swagger
 yarn add swagger-ui-express
-``` 
+```
 
-[swagger教程](https://cloud.tencent.com/developer/section/1490222)
+[swagger 教程](https://cloud.tencent.com/developer/section/1490222)
 
 ### 安装 dotenv
 
 ```shell
 yarn add  @nestjs/config
 yarn add  cross-env
-``` 
+```
 
-> @nestjs/config内部集成了dotenv
+> @nestjs/config 内部集成了 dotenv
 >
-> cross-env是一个nodejs 跨平台的插件
+> cross-env 是一个 nodejs 跨平台的插件
 
 #### 使用步骤
 
@@ -56,7 +66,9 @@ DB_NAME = test.sqlite
 
 2. 修改启动指令如下：
    ![配置环境]("https://github.com/scott8013/readme-images/blob/main/1.%E5%90%AF%E5%8A%A8%E5%B7%A5%E7%A8%8B%E6%8C%87%E4%BB%A4.png?raw=true")
+
 ### 连接数据库
+
 ```app.module.ts
 import { Module } from '@nestjs/common'
 import { AppController } from './app.controller'
@@ -120,10 +132,13 @@ export class UserService {
 ```
 
 ### 参数校验
+
 // class-validator 生效的关键
+
 ```ts
-  app.useGlobalPipes(new ValidationPipe())
+app.useGlobalPipes(new ValidationPipe())
 ```
+
 ```shell
 yarn add class-transformer class-validator
 ```
@@ -132,13 +147,11 @@ yarn add class-transformer class-validator
   // class-validator 生效的关键
   app.useGlobalPipes(new ValidationPipe())
 ```
-创建dto文件
 
-controller使用
+创建 dto 文件
 
+controller 使用
 
 ### 循环依赖
 
-### 
-
-
+###

@@ -14,7 +14,8 @@ import { UserProfileInput, UserProfileOut } from './dtos/user-profile.dto'
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
-  @Mutation(() => CreateAccountOutput)
+
+  @Mutation(() => CreateAccountOutput, { name: 'register' })
   async createAccount(
     @Args('input') createdAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
@@ -37,7 +38,7 @@ export class UsersResolver {
     }
   }
 
-  @Mutation(() => LoginOutput)
+  @Mutation(() => LoginOutput, { name: 'login' })
   async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
     try {
       return this.usersService.login(loginInput)
