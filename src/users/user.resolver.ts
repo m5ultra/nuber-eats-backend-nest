@@ -6,15 +6,15 @@ import {
   CreateAccountOutput,
 } from './dtos/create-account.dto'
 import { LoginInput, LoginOutput } from './dtos/login.dto'
-import { AuthGuard } from '../guards/auth.guard'
-import { UseGuards } from '@nestjs/common'
 import { AuthUser } from '../guards/auth-user.decorator'
 import { UserProfileInput, UserProfileOut } from './dtos/user-profile.dto'
+import { Role } from '../auth/role.decorator'
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
+  @Role(['Any'])
   @Mutation(() => CreateAccountOutput, { name: 'register' })
   async createAccount(
     @Args('input') createdAccountInput: CreateAccountInput,
@@ -38,17 +38,8 @@ export class UsersResolver {
     }
   }
 
-  @Mutation(() => LoginOutput, { name: 'login' })
-  async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      return this.usersService.login(loginInput)
-    } catch (e) {
-      return e
-    }
-  }
-
+  @Role(['Any'])
   @Query(() => User)
-  @UseGuards(AuthGuard)
   // me(@Context() { user }) {
   me(@AuthUser() user: User) {
     if (!user) {
@@ -58,8 +49,18 @@ export class UsersResolver {
     }
   }
 
+  @Mutation(() => LoginOutput, { name: 'login' })
+  @Role(['Any'])
+  async login(@Args('input') loginInput: LoginInput): Promise<LoginOutput> {
+    try {
+      return this.usersService.login(loginInput)
+    } catch (e) {
+      return e
+    }
+  }
+
   @Query(() => UserProfileOut)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOut> {

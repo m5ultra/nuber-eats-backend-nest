@@ -27,12 +27,14 @@ export class RestaurantsService {
       const categoryName = createRestaurantInput.categoryName
         .trim()
         .toLowerCase()
+      const coverImage = createRestaurantInput.coverImage
       const categorySlug = categoryName.replace(/ /g, '-')
       let category = await this.categorys.findOne({ slug: categorySlug })
       if (!category) {
         category = await this.categorys.save({
           slug: categorySlug,
           name: categoryName,
+          coverImage: coverImage,
         })
       }
       newRestaurant.category = category
