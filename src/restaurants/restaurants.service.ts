@@ -7,6 +7,8 @@ import {
   CreateRestaurantOutput,
 } from './dtos/create-restaurant.dto'
 import { User } from '../users/entities/user.entity'
+import { EditRestaurantOutput } from './dtos/edit-restaurant.dto'
+import { CategoryRepository } from './category.repositroy'
 import { Category } from './entities/category.entity'
 
 @Injectable()
@@ -14,9 +16,9 @@ export class RestaurantsService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-    @InjectRepository(Category)
-    private readonly categorys: Repository<Category>,
+    private readonly categorys: CategoryRepository,
   ) {}
+
   async createRestaurant(
     owner: User,
     createRestaurantInput: CreateRestaurantInput,
@@ -24,20 +26,10 @@ export class RestaurantsService {
     try {
       const newRestaurant = this.restaurants.create(createRestaurantInput)
       newRestaurant.owner = owner
-      const categoryName = createRestaurantInput.categoryName
-        .trim()
-        .toLowerCase()
-      const coverImage = createRestaurantInput.coverImage
-      const categorySlug = categoryName.replace(/ /g, '-')
-      let category = await this.categorys.findOne({ slug: categorySlug })
-      if (!category) {
-        category = await this.categorys.save({
-          slug: categorySlug,
-          name: categoryName,
-          coverImage: coverImage,
-        })
-      }
-      newRestaurant.category = category
+      newRestaurant.category = await this.categorys.getOrCreate(
+        createRestaurantInput.categoryName,
+        createRestaurantInput.coverImage,
+      )
       await this.restaurants.save(newRestaurant)
       return {
         ok: true,
@@ -46,6 +38,54 @@ export class RestaurantsService {
       return {
         ok: false,
         error: 'Could not create restaurant',
+      }
+    }
+  }
+
+  async editRestaurant(
+    owner: User,
+    editRestaurant,
+  ): Promise<EditRestaurantOutput> {
+    console.log(owner, '0')
+    console.log(editRestaurant, '1')
+    try {
+      // loadRelationIds: true 不会查关联数据的内容 只会返回一个ID
+      const rest = await this.restaurants.findOne(editRestaurant.restaurantId, {
+        loadRelationIds: true,
+      })
+      // 如果未找到
+      if (!rest) {
+        return {
+          ok: false,
+          error: 'Restaurant Not Found',
+        }
+      }
+
+      if (+owner.id !== +rest.ownerId) {
+        return {
+          ok: false,
+          error: "You can't edit a restaurant that you don't own",
+        }
+      }
+      let category: Category = null
+      if (editRestaurant.categoryName) {
+        category = await this.categorys.getOrCreate(editRestaurant.categoryName)
+      }
+
+      await this.restaurants.save([
+        {
+          id: editRestaurant.restaurantId,
+          ...editRestaurant,
+          ...(category && { category }),
+        },
+      ])
+      return {
+        ok: true,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Restaurant not found',
       }
     }
   }
