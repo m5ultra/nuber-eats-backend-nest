@@ -46,8 +46,6 @@ export class RestaurantsService {
     owner: User,
     editRestaurant,
   ): Promise<EditRestaurantOutput> {
-    console.log(owner, '0')
-    console.log(editRestaurant, '1')
     try {
       // loadRelationIds: true 不会查关联数据的内容 只会返回一个ID
       const rest = await this.restaurants.findOne(editRestaurant.restaurantId, {
@@ -72,17 +70,27 @@ export class RestaurantsService {
         category = await this.categorys.getOrCreate(editRestaurant.categoryName)
       }
 
-      await this.restaurants.save([
-        {
-          id: editRestaurant.restaurantId,
-          ...editRestaurant,
-          ...(category && { category }),
-        },
-      ])
+      // await this.restaurants.save([
+      //   {
+      //     id: editRestaurant.restaurantId,
+      //     ...editRestaurant,
+      //     ...(category && { category }),
+      //   },
+      // ])
+
+      const updateData = { ...editRestaurant, ...(category && { category }) }
+      delete updateData.restaurantId
+      delete updateData.categoryName
+
+      await this.restaurants.update(
+        { id: editRestaurant.restaurantId },
+        updateData,
+      )
       return {
         ok: true,
       }
     } catch (e) {
+      console.log(e, '~~~editRestaurant~~~')
       return {
         ok: false,
         error: 'Restaurant not found',

@@ -1,5 +1,5 @@
 import { Field, InputType, ObjectType } from '@nestjs/graphql'
-import {Column, Entity, ManyToOne, RelationId} from 'typeorm'
+import { Column, Entity, ManyToOne, RelationId } from 'typeorm'
 import { IsString, Length } from 'class-validator'
 import { CoreEntity } from '../../common/entities/core.entity'
 import { Category } from './category.entity'
