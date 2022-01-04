@@ -3,7 +3,7 @@ import { RestaurantsResolver } from './restaurants.resolver'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Restaurant } from './entities/restaurants.entity'
 import { RestaurantsService } from './restaurants.service'
-import { CategoryRepository } from './category.repositroy'
+import { CategoryRepository } from './repositories/category.repositroy'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Restaurant, CategoryRepository])],

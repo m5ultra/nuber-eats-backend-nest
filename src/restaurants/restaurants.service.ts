@@ -8,8 +8,9 @@ import {
 } from './dtos/create-restaurant.dto'
 import { User } from '../users/entities/user.entity'
 import { EditRestaurantOutput } from './dtos/edit-restaurant.dto'
-import { CategoryRepository } from './category.repositroy'
+import { CategoryRepository } from './repositories/category.repositroy'
 import { Category } from './entities/category.entity'
+import { DeleteRestaurantOutput } from './dtos/delete-restaurant.dto'
 
 @Injectable()
 export class RestaurantsService {
@@ -90,10 +91,43 @@ export class RestaurantsService {
         ok: true,
       }
     } catch (e) {
-      console.log(e, '~~~editRestaurant~~~')
       return {
         ok: false,
         error: 'Restaurant not found',
+      }
+    }
+  }
+
+  async deleteRestaurant(
+    owner: User,
+    restaurantId: string,
+  ): Promise<DeleteRestaurantOutput> {
+    try {
+      const res = await this.restaurants.findOne(restaurantId)
+      if (!res) {
+        return {
+          ok: false,
+          error: '未找到',
+        }
+      }
+      if (owner.id !== res.ownerId) {
+        return {
+          ok: false,
+          error: '未获取删除权限',
+        }
+      }
+      /**
+       * await this.restaurants.delete(restaurantId)
+       * await this.restaurants.delete([id1, id2, id3])
+       */
+      await this.restaurants.delete(restaurantId)
+      return {
+        ok: true,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: "Can't delete data",
       }
     }
   }
