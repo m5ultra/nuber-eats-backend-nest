@@ -11,6 +11,8 @@ import { EditRestaurantOutput } from './dtos/edit-restaurant.dto'
 import { CategoryRepository } from './repositories/category.repositroy'
 import { Category } from './entities/category.entity'
 import { DeleteRestaurantOutput } from './dtos/delete-restaurant.dto'
+import { AllCategorysOutput } from './dtos/all-categorys.dto'
+import { CategoryInput, CategoryOutput } from './dtos/category.dto'
 
 @Injectable()
 export class RestaurantsService {
@@ -128,6 +130,46 @@ export class RestaurantsService {
       return {
         ok: false,
         error: "Can't delete data",
+      }
+    }
+  }
+
+  async allCategorys(): Promise<AllCategorysOutput> {
+    try {
+      const categorys = await this.categorys.find()
+      return {
+        ok: true,
+        categorys,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Could not load categories',
+      }
+    }
+  }
+
+  countRestaurants(category: Category) {
+    return this.restaurants.count({ category })
+  }
+
+  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+    try {
+      const category = await this.categorys.findOne({ slug })
+      if (!category) {
+        return {
+          ok: false,
+          error: 'Category not found',
+        }
+      }
+      return {
+        ok: true,
+        category,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Could not found categorys',
       }
     }
   }

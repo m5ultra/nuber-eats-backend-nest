@@ -34,7 +34,7 @@ export class Restaurant extends CoreEntity {
   category: Category
 
   @Field(() => User)
-  @ManyToOne(() => User, (user) => user.restaurants)
+  @ManyToOne(() => User, (user) => user.restaurants, { onDelete: 'CASCADE' })
   owner: User
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
