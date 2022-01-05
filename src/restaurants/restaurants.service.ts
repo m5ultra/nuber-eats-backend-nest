@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Restaurant } from './entities/restaurants.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Like, Repository } from 'typeorm'
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -15,6 +15,10 @@ import { AllCategorysOutput } from './dtos/all-categorys.dto'
 import { CategoryInput, CategoryOutput } from './dtos/category.dto'
 import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dot'
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dot'
+import {
+  SearchRestaurantInput,
+  SearchRestaurantOutput,
+} from './dtos/search-restaurant.dto'
 
 @Injectable()
 export class RestaurantsService {
@@ -261,6 +265,46 @@ export class RestaurantsService {
       return {
         ok: true,
         error: 'Could Not Retrieval Restaurant By Id',
+      }
+    }
+  }
+
+  async searchRestaurant({
+    query,
+    pageSize,
+    pageNum,
+  }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
+    try {
+      let restaurants, totalItems
+      if (pageSize && pageNum) {
+        ;[restaurants, totalItems] = await this.restaurants.findAndCount({
+          where: {
+            name: Like(`%${query}%`),
+          },
+          take: pageSize,
+          skip: (pageNum - 1) * pageSize,
+        })
+      } else {
+        ;[restaurants, totalItems] = await this.restaurants.findAndCount({
+          where: {
+            name: Like(`%${query}%`),
+          },
+        })
+      }
+
+      if (!restaurants.length) {
+        return {
+          ok: true,
+          totalPages: pageSize !== 0 ? Math.ceil(totalItems / pageSize) : 1,
+          totalItems,
+          restaurants,
+        }
+      }
+      console.log(restaurants, '9090')
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Could not found restaurant',
       }
     }
   }
