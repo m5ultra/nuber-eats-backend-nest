@@ -13,6 +13,7 @@ import { Category } from './entities/category.entity'
 import { DeleteRestaurantOutput } from './dtos/delete-restaurant.dto'
 import { AllCategorysOutput } from './dtos/all-categorys.dto'
 import { CategoryInput, CategoryOutput } from './dtos/category.dto'
+import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dot'
 
 @Injectable()
 export class RestaurantsService {
@@ -153,7 +154,11 @@ export class RestaurantsService {
     return this.restaurants.count({ category })
   }
 
-  async findCategoryBySlug({ slug }: CategoryInput): Promise<CategoryOutput> {
+  async findCategoryBySlug({
+    slug,
+    pageSize,
+    pageNum,
+  }: CategoryInput): Promise<CategoryOutput> {
     try {
       const category = await this.categorys.findOne({ slug })
       if (!category) {
@@ -162,15 +167,57 @@ export class RestaurantsService {
           error: 'Category not found',
         }
       }
+      let restaurants
+      if (pageNum && pageNum) {
+        restaurants = await this.restaurants.find({
+          where: { category },
+          take: pageSize,
+          skip: (pageNum - 1) * pageSize,
+        })
+      } else {
+        restaurants = await this.restaurants.find({
+          where: { category },
+        })
+      }
+      category.restaurants = restaurants
+      const totalPages = await this.countRestaurants(category)
       return {
         ok: true,
         category,
+        totalPages: pageSize === null ? 1 : Math.ceil(totalPages / pageSize),
       }
     } catch (e) {
       return {
         ok: false,
         error: 'Could not found categorys',
       }
+    }
+  }
+
+  async allRestaurants(
+    authUser,
+    { pageSize, pageNum }: RestaurantInput,
+  ): Promise<RestaurantOutput> {
+    let restaurants
+    // 分页
+    if (pageSize && pageNum) {
+      restaurants = await this.restaurants.find({
+        take: pageSize,
+        skip: (pageNum - 1) * pageSize,
+      })
+    } else {
+      // 查所有
+      restaurants = await this.restaurants.find()
+    }
+
+    const totalPages =
+      pageSize === null
+        ? 1
+        : Math.ceil((await this.restaurants.count()) / pageSize)
+    return {
+      ok: true,
+      restaurants,
+      totalPages,
     }
   }
 }

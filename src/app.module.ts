@@ -67,6 +67,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
   ],
 })
 export class AppModule implements NestModule {
+  // 使用中间键
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)

@@ -27,6 +27,7 @@ import {
 import { Category } from './entities/category.entity'
 import { AllCategorysOutput } from './dtos/all-categorys.dto'
 import { CategoryInput, CategoryOutput } from './dtos/category.dto'
+import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dot'
 
 @Resolver(() => Restaurant)
 export class RestaurantsResolver {
@@ -61,12 +62,22 @@ export class RestaurantsResolver {
   ): Promise<DeleteRestaurantOutput> {
     return this.restaurantService.deleteRestaurant(authUser, restaurantId)
   }
+
+  @Query(() => RestaurantOutput)
+  @Role(['Owner'])
+  async allRestaurants(
+    @AuthUser() authUser: User,
+    @Args('input') restaurantInput: RestaurantInput,
+  ): Promise<RestaurantOutput> {
+    return this.restaurantService.allRestaurants(authUser, restaurantInput)
+  }
 }
 
 @Resolver(() => Category)
 export class CategoryResolver {
   constructor(private readonly restaurantService: RestaurantsService) {}
 
+  // TODO 在category增加restaurantCount属性 不太好理解
   @ResolveField(() => Int)
   restaurantCount(@Parent() category: Category): Promise<number> {
     return this.restaurantService.countRestaurants(category)
@@ -79,7 +90,7 @@ export class CategoryResolver {
 
   @Query(() => CategoryOutput)
   async category(
-    @Args() categoryInput: CategoryInput,
+    @Args('input') categoryInput: CategoryInput,
   ): Promise<CategoryOutput> {
     return this.restaurantService.findCategoryBySlug(categoryInput)
   }
