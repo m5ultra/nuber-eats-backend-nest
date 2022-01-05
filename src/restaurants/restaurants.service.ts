@@ -13,6 +13,7 @@ import { Category } from './entities/category.entity'
 import { DeleteRestaurantOutput } from './dtos/delete-restaurant.dto'
 import { AllCategorysOutput } from './dtos/all-categorys.dto'
 import { CategoryInput, CategoryOutput } from './dtos/category.dto'
+import { RestaurantsInput, RestaurantsOutput } from './dtos/restaurants.dot'
 import { RestaurantInput, RestaurantOutput } from './dtos/restaurant.dot'
 
 @Injectable()
@@ -197,7 +198,7 @@ export class RestaurantsService {
   async allRestaurants({
     pageSize,
     pageNum,
-  }: RestaurantInput): Promise<RestaurantOutput> {
+  }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
       let restaurants
       // 分页
@@ -235,6 +236,31 @@ export class RestaurantsService {
       return {
         ok: false,
         error: 'Could not load restaurants',
+      }
+    }
+  }
+
+  async findRestaurantById({
+    restaurantId,
+  }: RestaurantInput): Promise<RestaurantOutput> {
+    try {
+      const restaurants = await this.restaurants.query(`
+       SELECT * FROM restaurant WHERE id=${restaurantId}
+      `)
+      if (!restaurants.length) {
+        return {
+          ok: false,
+          error: 'Not Found',
+        }
+      }
+      return {
+        ok: true,
+        restaurant: restaurants[0],
+      }
+    } catch (e) {
+      return {
+        ok: true,
+        error: 'Could Not Retrieval Restaurant By Id',
       }
     }
   }
