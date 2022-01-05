@@ -194,30 +194,48 @@ export class RestaurantsService {
     }
   }
 
-  async allRestaurants(
-    authUser,
-    { pageSize, pageNum }: RestaurantInput,
-  ): Promise<RestaurantOutput> {
-    let restaurants
-    // 分页
-    if (pageSize && pageNum) {
-      restaurants = await this.restaurants.find({
-        take: pageSize,
-        skip: (pageNum - 1) * pageSize,
-      })
-    } else {
-      // 查所有
-      restaurants = await this.restaurants.find()
-    }
+  async allRestaurants({
+    pageSize,
+    pageNum,
+  }: RestaurantInput): Promise<RestaurantOutput> {
+    try {
+      let restaurants
+      // 分页
+      if (pageSize && pageNum) {
+        // restaurants = await this.restaurants.find({
+        //   take: pageSize,
+        //   skip: (pageNum - 1) * pageSize,
+        // })
+        restaurants = await this.restaurants.query(
+          `SELECT * FROM restaurant LIMIT ${pageSize} OFFSET ${
+            (pageNum - 1) * pageSize
+          }`,
+        )
 
-    const totalPages =
-      pageSize === null
-        ? 1
-        : Math.ceil((await this.restaurants.count()) / pageSize)
-    return {
-      ok: true,
-      restaurants,
-      totalPages,
+        // ;[restaurants, totalPages] = await this.restaurants.findAndCount({
+        //   take: pageSize,
+        //   skip: (pageNum - 1) * pageSize,
+        // })
+      } else {
+        // 查所有
+        // restaurants = await this.restaurants.find()
+        restaurants = await this.restaurants.query(`select * from restaurant`)
+      }
+
+      const totalPages =
+        pageSize === null
+          ? 1
+          : Math.ceil((await this.restaurants.count()) / pageSize)
+      return {
+        ok: true,
+        restaurants,
+        totalPages,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Could not load restaurants',
+      }
     }
   }
 }

@@ -66,10 +66,9 @@ export class RestaurantsResolver {
   @Query(() => RestaurantOutput)
   @Role(['Owner'])
   async allRestaurants(
-    @AuthUser() authUser: User,
     @Args('input') restaurantInput: RestaurantInput,
   ): Promise<RestaurantOutput> {
-    return this.restaurantService.allRestaurants(authUser, restaurantInput)
+    return this.restaurantService.allRestaurants(restaurantInput)
   }
 }
 
