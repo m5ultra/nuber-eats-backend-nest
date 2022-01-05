@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Restaurant } from './entities/restaurants.entity'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Like, Repository } from 'typeorm'
+import { Like, Raw, Repository } from 'typeorm'
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
@@ -287,20 +287,23 @@ export class RestaurantsService {
       } else {
         ;[restaurants, totalItems] = await this.restaurants.findAndCount({
           where: {
-            name: Like(`%${query}%`),
+            // name: Like(`%${query}%`),
+            name: Raw((v) => `${v} ILike '%${query}%'`),
           },
         })
       }
-
       if (!restaurants.length) {
         return {
-          ok: true,
-          totalPages: pageSize !== 0 ? Math.ceil(totalItems / pageSize) : 1,
-          totalItems,
-          restaurants,
+          ok: false,
+          error: 'Not Found.',
         }
       }
-      console.log(restaurants, '9090')
+      return {
+        ok: true,
+        totalPages: pageSize !== 0 ? Math.ceil(totalItems / pageSize) : 1,
+        totalItems,
+        restaurants,
+      }
     } catch (e) {
       return {
         ok: false,
