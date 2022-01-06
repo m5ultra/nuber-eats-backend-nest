@@ -41,15 +41,15 @@ export class Restaurant extends CoreEntity {
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number
 
-  @Field((type) => [Dish])
-  @OneToMany((type) => Dish, (dish) => dish.restaurant)
+  @Field(() => [Dish])
+  @OneToMany(() => Dish, (dish) => dish.restaurant)
   menu: Dish[]
 
-  @Field((type) => Boolean)
+  @Field(() => Boolean)
   @Column({ default: false })
   isPromoted: boolean
 
-  @Field((type) => Date, { nullable: true })
+  @Field(() => Date, { nullable: true })
   @Column({ nullable: true })
   promotedUntil: Date
 }
