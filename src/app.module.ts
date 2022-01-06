@@ -18,6 +18,7 @@ import { Verification } from './users/entities/verification.entity'
 import { MailModule } from './mail/mail.module'
 import { Category } from './restaurants/entities/category.entity'
 import { Dish } from './restaurants/entities/dish.entity'
+import { OrdersModule } from './orders/orders.module'
 
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
@@ -65,6 +66,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
       formEmail: process.env.QQ_FROM_EMAIL,
       code: process.env.QQ_AUTHORIZATION_CODE,
     }),
+    OrdersModule,
   ],
 })
 export class AppModule implements NestModule {

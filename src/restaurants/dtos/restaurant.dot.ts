@@ -4,12 +4,12 @@ import { Restaurant } from '../entities/restaurants.entity'
 
 @InputType()
 export class RestaurantInput {
-  @Field((type) => Int)
+  @Field(() => Int)
   restaurantId: number
 }
 
 @ObjectType()
 export class RestaurantOutput extends CoreOutput {
-  @Field((type) => Restaurant, { nullable: true })
+  @Field(() => Restaurant, { nullable: true })
   restaurant?: Restaurant
 }
