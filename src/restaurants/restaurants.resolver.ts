@@ -36,6 +36,7 @@ import {
 import { Dish } from './entities/dish.entity'
 import { CreateDishInput, CreateDishOutput } from './dtos/create-dish.dot'
 import { EditDishInput, EditDishOutput } from './dtos/edit-dish.dto'
+import { DeleteDishInput, DeleteDishOutput } from './dtos/delete-dish.dto'
 
 @Resolver(() => Restaurant)
 export class RestaurantsResolver {
@@ -137,7 +138,16 @@ export class DishResolver {
   async editDish(
     @AuthUser() owner: User,
     @Args('input') editDishInput: EditDishInput,
-  ) {
+  ): Promise<EditDishOutput> {
     return this.restaurantService.editDish(owner, editDishInput)
+  }
+
+  @Mutation(() => DeleteDishOutput)
+  @Role(['Owner'])
+  async deleteDish(
+    @AuthUser() owner: User,
+    @Args('input') deleteDishInput: DeleteDishInput,
+  ): Promise<DeleteDishOutput> {
+    return this.restaurantService.deleteDish(owner, deleteDishInput)
   }
 }
