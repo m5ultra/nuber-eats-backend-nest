@@ -21,6 +21,7 @@ import { Dish } from './restaurants/entities/dish.entity'
 import { OrdersModule } from './orders/orders.module'
 import { Order } from './orders/entities/order.entity'
 import { OrderItem } from './orders/entities/order-item.entity'
+import { CommonModule } from './common/common.module'
 
 console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
@@ -77,6 +78,7 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
       code: process.env.QQ_AUTHORIZATION_CODE,
     }),
     OrdersModule,
+    CommonModule,
   ],
 })
 export class AppModule implements NestModule {

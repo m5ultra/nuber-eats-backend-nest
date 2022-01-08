@@ -72,7 +72,7 @@ export class RestaurantsResolver {
     return this.restaurantService.deleteRestaurant(authUser, restaurantId)
   }
 
-  @Query(() => RestaurantOutput)
+  @Query(() => RestaurantsOutput)
   @Role(['Owner'])
   async allRestaurants(
     @Args('input') restaurantsInput: RestaurantsInput,
