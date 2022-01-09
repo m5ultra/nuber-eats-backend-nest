@@ -34,6 +34,7 @@ export class OrderService {
     { restaurantId, items }: CreateOrderInput,
   ): Promise<CreateOrderOutput> {
     try {
+      // 判断餐馆是否存在
       const restaurant = await this.restaurants.findOne(restaurantId)
       if (!restaurant) {
         return {
