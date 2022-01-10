@@ -43,9 +43,14 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
       }),
     }),
     GraphQLModule.forRoot({
+      installSubscriptionHandlers: true,
       autoSchemaFile: true,
       // 每次发送请求会先执行中间件 在执行此处的代码
-      context: ({ req }) => ({ user: req['user'] }),
+      context: ({ req }) => {
+        // TODO webstorm debugger 无法显示 对象的git属性
+        console.log(req.headers['authorization'], 'Authorization')
+        return { user: req['user'], token: req.headers['authorization'] }
+      },
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
