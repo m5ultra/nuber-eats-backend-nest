@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common'
-import { User } from '../users/entities/user.entity'
+import { User, UserRole } from '../users/entities/user.entity'
 import { CreateOrderInput, CreateOrderOutput } from './dtos/create-order.dto'
 import { Restaurant } from '../restaurants/entities/restaurants.entity'
 import { OrderItem } from './entities/order-item.entity'
@@ -14,6 +14,7 @@ import {
   NEW_PENDING_ORDER,
   PUB_SUB,
 } from 'src/common/common.constants'
+import { GetOrdersInput } from './dtos/get-orders.dot'
 
 @Injectable()
 export class OrderService {
@@ -102,6 +103,48 @@ export class OrderService {
         ok: false,
         error: 'Could not create order.',
       }
+    }
+  }
+
+  async getOrders(user: User, { status }: GetOrdersInput) {
+    try {
+      let orders: Order[]
+      switch (user.role) {
+        case UserRole.Client: {
+          orders = await this.orders.find({
+            where: { customer: user, ...(status && { status }) },
+          })
+          console.log(orders, '01')
+          break
+        }
+        case UserRole.Delivery: {
+          orders = await this.orders.find({
+            where: { driver: user, ...(status && { status }) },
+          })
+          console.log(orders, '02')
+          break
+        }
+        case UserRole.Owner: {
+          const restaurants = await this.restaurants.find({
+            where: { owner: user },
+            // select: ['orders'],
+            relations: ['orders'],
+          })
+          orders = restaurants.map((restaurant) => restaurant.orders).flat(1)
+          if (status) {
+            orders = orders.filter((order) => order.status === status)
+          }
+          console.log(orders, '03')
+          break
+        }
+      }
+      return {
+        ok: true,
+        orders: orders.filter((v) => v.status === status),
+      }
+    } catch (e) {
+      console.log(e)
+      return { ok: false, error: 'Could not get orders' }
     }
   }
 }
