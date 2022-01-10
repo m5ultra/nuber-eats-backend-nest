@@ -15,6 +15,7 @@ import {
   PUB_SUB,
 } from 'src/common/common.constants'
 import { GetOrdersInput } from './dtos/get-orders.dot'
+import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto'
 
 @Injectable()
 export class OrderService {
@@ -114,7 +115,6 @@ export class OrderService {
           orders = await this.orders.find({
             where: { customer: user, ...(status && { status }) },
           })
-          console.log(orders, '01')
           break
         }
         case UserRole.Delivery: {
@@ -145,6 +145,43 @@ export class OrderService {
     } catch (e) {
       console.log(e)
       return { ok: false, error: 'Could not get orders' }
+    }
+  }
+
+  async getOrder(
+    user: User,
+    { id: OrderId }: GetOrderInput,
+  ): Promise<GetOrderOutput> {
+    try {
+      const order = await this.orders.findOne(OrderId, {
+        relations: ['restaurant'],
+      })
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        }
+      }
+      if (
+        order.customer.id !== user.id &&
+        order?.driver?.id === user.id &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        return {
+          ok: false,
+          error: "You can't see that.",
+        }
+      }
+      return {
+        ok: true,
+        order,
+      }
+    } catch (e) {
+      console.log(e)
+      return {
+        ok: false,
+        error: 'Could not load order',
+      }
     }
   }
 }
