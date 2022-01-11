@@ -23,7 +23,6 @@ import { Order } from './orders/entities/order.entity'
 import { OrderItem } from './orders/entities/order-item.entity'
 import { CommonModule } from './common/common.module'
 
-console.log(process.env.NODE_ENV, '~~~env~~~')
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,9 +46,11 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
       autoSchemaFile: true,
       // 每次发送请求会先执行中间件 在执行此处的代码
       context: ({ req }) => {
-        // TODO webstorm debugger 无法显示 对象的git属性
-        console.log(req.headers['authorization'], 'Authorization')
-        return { user: req['user'], token: req.headers['authorization'] }
+        // return { user: req['user'], token: req.headers['authorization'] }
+        const {
+          headers: { authorization: token },
+        } = req
+        return { token, name: 'Dendi' }
       },
     }),
     TypeOrmModule.forRoot({
@@ -86,11 +87,14 @@ console.log(process.env.NODE_ENV, '~~~env~~~')
     CommonModule,
   ],
 })
-export class AppModule implements NestModule {
-  // 使用中间键
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes({ path: '/graphql', method: RequestMethod.POST })
-  }
-}
+
+// TODO ws
+// export class AppModule implements NestModule {
+//   // 使用中间键
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(AuthMiddleware)
+//       .forRoutes({ path: '/graphql', method: RequestMethod.POST })
+//   }
+// }
+export class AppModule {}

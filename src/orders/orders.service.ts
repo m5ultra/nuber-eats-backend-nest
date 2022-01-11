@@ -95,7 +95,6 @@ export class OrderService {
         orderId: order.id,
       }
     } catch (e) {
-      console.log(e)
       return {
         ok: false,
         error: 'Could not create order.',
@@ -117,7 +116,6 @@ export class OrderService {
           orders = await this.orders.find({
             where: { driver: user, ...(status && { status }) },
           })
-          console.log(orders, '02')
           break
         }
         case UserRole.Owner: {
@@ -130,7 +128,6 @@ export class OrderService {
           if (status) {
             orders = orders.filter((order) => order.status === status)
           }
-          console.log(orders, '03')
           break
         }
       }
@@ -139,7 +136,6 @@ export class OrderService {
         orders: orders.filter((v) => v.status === status),
       }
     } catch (e) {
-      console.log(e)
       return { ok: false, error: 'Could not get orders' }
     }
   }
@@ -169,7 +165,6 @@ export class OrderService {
         order,
       }
     } catch (e) {
-      console.log(e)
       return {
         ok: false,
         error: 'Could not load order',
@@ -243,7 +238,6 @@ export class OrderService {
         ok: true,
       }
     } catch (e) {
-      console.log(e)
       return {
         ok: false,
         error: "Can't edit order",

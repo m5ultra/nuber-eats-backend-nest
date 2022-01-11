@@ -345,7 +345,6 @@ export class RestaurantsService {
         ok: true,
       }
     } catch (error) {
-      console.log(error)
       return {
         ok: false,
         error: 'Could not create dish',

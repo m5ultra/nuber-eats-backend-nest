@@ -26,7 +26,6 @@ export class MailService {
         }
       }
     } catch (e) {
-      console.log(e)
       return {
         statesCode: 500,
         message: '邮件发送失败',
