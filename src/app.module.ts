@@ -43,6 +43,7 @@ import { CommonModule } from './common/common.module'
     }),
     GraphQLModule.forRoot({
       subscriptions: {
+        // return参数可以被guard的上下文中被获取
         'subscriptions-transport-ws': {
           // connectionParams参数可以获取到 HttpHeaders的参数
           onConnect: (connectionParams) => {
