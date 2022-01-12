@@ -42,15 +42,20 @@ import { CommonModule } from './common/common.module'
       }),
     }),
     GraphQLModule.forRoot({
+      subscriptions: {
+        'subscriptions-transport-ws': {
+          onConnect: (connectionParams) => {
+            return { token: connectionParams.Authorization }
+          },
+        },
+      },
       installSubscriptionHandlers: true,
       autoSchemaFile: true,
-      // 每次发送请求会先执行中间件 在执行此处的代码
       context: ({ req }) => {
-        // return { user: req['user'], token: req.headers['authorization'] }
         const {
           headers: { authorization: token },
         } = req
-        return { token, name: 'Dendi' }
+        return { token }
       },
     }),
     TypeOrmModule.forRoot({

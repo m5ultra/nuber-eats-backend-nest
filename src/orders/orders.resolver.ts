@@ -64,7 +64,9 @@ export class OrdersResolver {
   }
 
   @Mutation((returns) => Boolean)
-  async potatoReady() {
+  @Role(['Any'])
+  async potatoReady(@AuthUser() user: User) {
+    console.log(user, 'mutation')
     await this.pubSub.publish('hotPotatoes', {
       readyPotato: 'This is potatoReady Mutation',
     })
