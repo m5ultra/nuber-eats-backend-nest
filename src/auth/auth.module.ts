@@ -4,8 +4,10 @@ import { AuthModuleOptions } from './auth-module-options.interface'
 import { CONFIG_OPTIONS } from '../common/common.constants'
 import { APP_GUARD } from '@nestjs/core'
 import { AuthGuard } from '../guards/auth.guard'
+import { UsersModule } from '../users/users.module'
 
 @Module({
+  imports: [UsersModule],
   providers: [
     {
       provide: APP_GUARD,
