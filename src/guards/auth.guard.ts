@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
       return true
     }
     // 2.0 token不存在
-    const token = gqlContext.token.trim().split(' ')[1]
+    const token = gqlContext?.token?.trim()?.split(' ')[1]
     if (!token) {
       return false
     }
@@ -52,8 +52,10 @@ export class AuthGuard implements CanActivate {
 
         // 4.0 如果 roles中包含Any 所有人都可以访问
         if (roles?.includes('Any')) {
+          gqlContext['user'] = user
           return true
         }
+
         // 5.0  roles是否包含 @Role(['Any'])的角色 这里是 "Any"
         return roles.includes(user.role)
       } catch (e) {}
