@@ -10,6 +10,7 @@ export class AuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext) {
     const gqlContext = GqlExecutionContext.create(context).getContext()
+    console.log(gqlContext.token, 'auth.guard.ts')
     const roles = this.reflector.get<AllowedRoles>(
       ROLES_KEY,
       context.getHandler(),

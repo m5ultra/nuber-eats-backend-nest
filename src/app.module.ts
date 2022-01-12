@@ -44,6 +44,7 @@ import { CommonModule } from './common/common.module'
     GraphQLModule.forRoot({
       subscriptions: {
         'subscriptions-transport-ws': {
+          // connectionParams参数可以获取到 HttpHeaders的参数
           onConnect: (connectionParams) => {
             return { token: connectionParams.Authorization }
           },

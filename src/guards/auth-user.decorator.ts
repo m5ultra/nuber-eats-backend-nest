@@ -10,7 +10,6 @@ export const AuthUser = createParamDecorator(
      * 这是为了兼容Subscribe @AuthUser 参数装饰器获取不到User信息的问题
      */
     console.log(gqlContext.token, 'auth-user.decorator.ts')
-    debugger
     if (gqlContext.user) {
       return gqlContext.user
     } else {
