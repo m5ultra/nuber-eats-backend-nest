@@ -55,9 +55,9 @@ import { CommonModule } from './common/common.module'
       autoSchemaFile: true,
       context: ({ req }) => {
         const {
-          headers: { authorization: token },
+          headers: { authorization: token, is_login },
         } = req
-        return { token }
+        return { token, is_login }
       },
     }),
     TypeOrmModule.forRoot({

@@ -56,20 +56,38 @@ export class OrdersResolver {
     return this.ordersService.editOrder(user, editOrderInput)
   }
 
-  @Subscription((returns) => String)
-  @Role(['Any'])
-  readyPotato(@AuthUser() user: User) {
-    console.log(user, 'Subscription')
-    return this.pubSub.asyncIterator('hotPotatoes')
-  }
+  // @Subscription((returns) => String, {
+  //   filter: ({ readyPotato }, { potatoId }) => {
+  //     return readyPotato === potatoId
+  //   },
+  //   resolve: ({ readyPotato }) => {
+  //     return `Your potato with the id ${readyPotato} is ready!`
+  //   },
+  // })
+  // readyPotato(@Args('potatoId') potatoId: number) {
+  //   return this.pubSub.asyncIterator('hotPotatoes')
+  // }
+  //
+  // @Mutation((returns) => Boolean)
+  // async potatoReady(@Args('potatoId') potatoId: number) {
+  //   await this.pubSub.publish('hotPotatoes', {
+  //     readyPotato: potatoId,
+  //   })
+  //   return true
+  // }
 
-  @Mutation((returns) => Boolean)
-  @Role(['Any'])
-  async potatoReady(@AuthUser() user: User) {
-    console.log(user, 'mutation')
-    await this.pubSub.publish('hotPotatoes', {
-      readyPotato: 'This is potatoReady Mutation',
-    })
-    return true
+  @Subscription((returns) => Order, {
+    filter: (payload, _, context) => {
+      console.log(payload, context, '1')
+      return true
+    },
+    resolve: ({ pendingOrders }) => {
+      console.log(pendingOrders.order)
+      return pendingOrders.order
+    },
+  })
+  @Role(['Owner'])
+  pendingOrders() {
+    return this.pubSub.asyncIterator('NEW_PENDING_ORDER')
   }
 }
