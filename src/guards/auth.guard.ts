@@ -10,7 +10,6 @@ export class AuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext) {
     const gqlContext = GqlExecutionContext.create(context).getContext()
-    console.log(gqlContext.token, 'auth.guard.ts')
     const roles = this.reflector.get<AllowedRoles>(
       ROLES_KEY,
       context.getHandler(),
@@ -18,6 +17,7 @@ export class AuthGuard implements CanActivate {
     if (!roles) {
       return true
     }
+    console.log(gqlContext.token, 'auth.guard.ts')
 
     if (roles?.includes('Any')) {
       return true
