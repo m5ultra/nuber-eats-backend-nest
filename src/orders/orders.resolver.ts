@@ -10,7 +10,11 @@ import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto'
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto'
 import { PubSub } from 'graphql-subscriptions'
 import { Inject } from '@nestjs/common'
-import { PUB_SUB } from '../common/common.constants'
+import {
+  NEW_PENDING_ORDER,
+  PUB_SUB,
+  NEW_COOKED_ORDER,
+} from '../common/common.constants'
 
 @Resolver((of) => Order)
 export class OrdersResolver {
@@ -78,13 +82,18 @@ export class OrdersResolver {
 
   @Subscription((returns) => Order, {
     filter: ({ pendingOrders: { ownerId } }, _, { user }) => {
-      debugger
       return ownerId === user.id
     },
     resolve: ({ pendingOrders: { order } }) => order,
   })
   @Role(['Owner'])
   pendingOrders() {
-    return this.pubSub.asyncIterator('NEW_PENDING_ORDER')
+    return this.pubSub.asyncIterator(NEW_PENDING_ORDER)
+  }
+
+  @Subscription((returns) => Order)
+  @Role(['Delivery'])
+  cookedOrders() {
+    return this.pubSub.asyncIterator(NEW_COOKED_ORDER)
   }
 }

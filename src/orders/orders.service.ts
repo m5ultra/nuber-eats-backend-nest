@@ -8,7 +8,11 @@ import { Repository } from 'typeorm'
 import { Dish } from '../restaurants/entities/dish.entity'
 import { Order, OrderStatus } from './entities/order.entity'
 import { PubSub } from 'graphql-subscriptions'
-import { NEW_PENDING_ORDER, PUB_SUB } from 'src/common/common.constants'
+import {
+  NEW_COOKED_ORDER,
+  NEW_PENDING_ORDER,
+  PUB_SUB,
+} from 'src/common/common.constants'
 import { GetOrdersInput } from './dtos/get-orders.dot'
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto'
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto'
@@ -87,8 +91,7 @@ export class OrderService {
           items: orderItems,
         }),
       )
-      console.log(order, '12345')
-      await this.pubSub.publish('NEW_PENDING_ORDER', {
+      await this.pubSub.publish(NEW_PENDING_ORDER, {
         pendingOrders: { order, ownerId: restaurant.ownerId },
       })
       return {
@@ -235,6 +238,13 @@ export class OrderService {
         id: orderId,
         status,
       })
+      if (user.role === UserRole.Owner) {
+        if (status === OrderStatus.Cooked) {
+          await this.pubSub.publish(NEW_COOKED_ORDER, {
+            cookedOrders: { ...order, status },
+          })
+        }
+      }
       return {
         ok: true,
       }
