@@ -14,7 +14,11 @@ import {
   NEW_PENDING_ORDER,
   PUB_SUB,
   NEW_COOKED_ORDER,
+  NEW_ORDER_UPDATE,
 } from '../common/common.constants'
+import { OrderUpdatesInput } from './dtos/order-updates.dto'
+import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto'
+import { DEFAULT_AUTHOR } from '@nestjs/schematics'
 
 @Resolver((of) => Order)
 export class OrdersResolver {
@@ -95,5 +99,35 @@ export class OrdersResolver {
   @Role(['Delivery'])
   cookedOrders() {
     return this.pubSub.asyncIterator(NEW_COOKED_ORDER)
+  }
+
+  @Subscription((returns) => Order, {
+    filter: (
+      { orderUpdates: order }: { orderUpdates: Order },
+      { input }: { input: OrderUpdatesInput },
+      { user }: { user: User },
+    ) => {
+      if (
+        order.driverId !== user.id &&
+        order.customerId !== user.id &&
+        order.restaurant.ownerId !== user.id
+      ) {
+        return false
+      }
+      return order.id === input.id
+    },
+  })
+  @Role(['Any'])
+  orderUpdates(@Args('input') orderUpdatesInput: OrderUpdatesInput) {
+    return this.pubSub.asyncIterator(NEW_ORDER_UPDATE)
+  }
+
+  @Mutation((returns) => TakeOrderOutput)
+  @Role(['Delivery'])
+  takeOrder(
+    @AuthUser() driver: User,
+    @Args('input') takeOrderInput: TakeOrderInput,
+  ): Promise<TakeOrderOutput> {
+    return this.ordersService.takeOrder(driver, takeOrderInput)
   }
 }

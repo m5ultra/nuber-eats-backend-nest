@@ -10,12 +10,14 @@ import { Order, OrderStatus } from './entities/order.entity'
 import { PubSub } from 'graphql-subscriptions'
 import {
   NEW_COOKED_ORDER,
+  NEW_ORDER_UPDATE,
   NEW_PENDING_ORDER,
   PUB_SUB,
 } from 'src/common/common.constants'
 import { GetOrdersInput } from './dtos/get-orders.dot'
 import { GetOrderInput, GetOrderOutput } from './dtos/get-order.dto'
 import { EditOrderInput, EditOrderOutput } from './dtos/edit-order.dto'
+import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto'
 
 @Injectable()
 export class OrderService {
@@ -238,13 +240,15 @@ export class OrderService {
         id: orderId,
         status,
       })
+      const newOrder = { ...order, status }
       if (user.role === UserRole.Owner) {
         if (status === OrderStatus.Cooked) {
           await this.pubSub.publish(NEW_COOKED_ORDER, {
-            cookedOrders: { ...order, status },
+            cookedOrders: newOrder,
           })
         }
       }
+      await this.pubSub.publish(NEW_ORDER_UPDATE, { orderUpdates: newOrder })
       return {
         ok: true,
       }
@@ -253,6 +257,38 @@ export class OrderService {
         ok: false,
         error: "Can't edit order",
       }
+    }
+  }
+
+  async takeOrder(
+    driver: User,
+    { id: orderId }: TakeOrderInput,
+  ): Promise<TakeOrderOutput> {
+    const order = await this.orders.findOne(orderId)
+    if (!order) {
+      return {
+        ok: false,
+        error: 'Order not found.',
+      }
+    }
+    if (order.driver) {
+      return {
+        ok: false,
+        error: 'This order already has a driver',
+      }
+    }
+    // TODO 这里可能会有BUG save可能是新建操作 不是update action
+    await this.orders.save([
+      {
+        id: orderId,
+        driver,
+      },
+    ])
+    await this.pubSub.publish(NEW_ORDER_UPDATE, {
+      orderUpdates: { ...order, driver },
+    })
+    return {
+      ok: true,
     }
   }
 }
