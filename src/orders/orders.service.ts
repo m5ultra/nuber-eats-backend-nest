@@ -264,31 +264,39 @@ export class OrderService {
     driver: User,
     { id: orderId }: TakeOrderInput,
   ): Promise<TakeOrderOutput> {
-    const order = await this.orders.findOne(orderId)
-    if (!order) {
+    try {
+      const order = await this.orders.findOne(orderId)
+      if (!order) {
+        return {
+          ok: false,
+          error: 'Order not found.',
+        }
+      }
+      // 如果已经有骑手了
+      if (order.driver) {
+        return {
+          ok: false,
+          error: 'This order already has a driver',
+        }
+      }
+      // TODO 这里可能会有BUG save可能是新建操作 不是update action
+      await this.orders.save([
+        {
+          id: orderId,
+          driver,
+        },
+      ])
+      await this.pubSub.publish(NEW_ORDER_UPDATE, {
+        orderUpdates: { ...order, driver },
+      })
+      return {
+        ok: true,
+      }
+    } catch (e) {
       return {
         ok: false,
-        error: 'Order not found.',
+        error: 'Could not update Order.',
       }
-    }
-    if (order.driver) {
-      return {
-        ok: false,
-        error: 'This order already has a driver',
-      }
-    }
-    // TODO 这里可能会有BUG save可能是新建操作 不是update action
-    await this.orders.save([
-      {
-        id: orderId,
-        driver,
-      },
-    ])
-    await this.pubSub.publish(NEW_ORDER_UPDATE, {
-      orderUpdates: { ...order, driver },
-    })
-    return {
-      ok: true,
     }
   }
 }
