@@ -11,9 +11,9 @@ export class Payment extends CoreEntity {
   @Column()
   transactionId: number
 
-  @Field((type) => User, { nullable: true })
+  @Field((type) => User)
   @ManyToOne((type) => User, (user) => user.payments)
-  user?: User
+  user: User
 
   @RelationId((order: Payment) => order.user)
   userId: number
