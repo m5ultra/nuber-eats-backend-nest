@@ -284,6 +284,7 @@ export class OrderService {
         {
           id: orderId,
           driver,
+          status: OrderStatus.PickedUp,
         },
       ])
       await this.pubSub.publish(NEW_ORDER_UPDATE, {

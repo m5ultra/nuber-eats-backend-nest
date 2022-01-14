@@ -15,9 +15,11 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   RelationId,
 } from 'typeorm'
 import { OrderItem } from './order-item.entity'
+import { Payment } from '../../payments/entities/payment.entity'
 
 export enum OrderStatus {
   Pending = 'Pending',

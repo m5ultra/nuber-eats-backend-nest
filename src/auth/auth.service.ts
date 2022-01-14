@@ -11,7 +11,7 @@ export class AuthService {
 
   sign(userId: number): string {
     return jwt.sign({ id: userId }, this.options.privateKey, {
-      expiresIn: '7d',
+      expiresIn: '30d',
     })
   }
 
