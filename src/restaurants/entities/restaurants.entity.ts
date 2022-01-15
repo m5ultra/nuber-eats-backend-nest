@@ -13,7 +13,7 @@ import { Order } from '../../orders/entities/order.entity'
 export class Restaurant extends CoreEntity {
   @Field(() => String)
   @IsString()
-  @Length(4, 50)
+  @Length(2, 50)
   @Column({ unique: true })
   name: string
 
