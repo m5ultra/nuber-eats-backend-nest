@@ -245,11 +245,7 @@ s/old/new/g 用 old 替换 new，替换当前行的所有匹配
 :10,20 s/^/ /g 在第 10 行知第 20 行每行前面加四个空格，用于缩进。
 ddp 交换光标所在行和其下紧邻的一行。
 
-### 课程不完整了
-
-- Create Dish
-- Edit Dish
-- Delete Dish
-- Orders CURD
-- orders Subscription (Owner, Customer, Delivery)
-- Payments (CRON)
+###  需要完成功能 
+1. upload files  存入缓存池 如果入库了 删除无用文件
+2. 邮箱验证 如果使用第三方的需要付费 注册用户是生成验证码 如果超过一定时间 失效
+3. 实现静态资源服务器
