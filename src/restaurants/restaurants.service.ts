@@ -182,6 +182,7 @@ export class RestaurantsService {
       if (pageNum && pageNum) {
         restaurants = await this.restaurants.find({
           where: { category },
+          order: { isPromoted: 'DESC' },
           take: pageSize,
           skip: (pageNum - 1) * pageSize,
         })

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Payment } from './entities/payment.entity'
-import { Repository } from 'typeorm'
+import { LessThan, Repository } from 'typeorm'
 import {
   CreatePaymentInput,
   CreatePaymentOutput,
@@ -9,7 +9,7 @@ import {
 import { User } from '../users/entities/user.entity'
 import { Restaurant } from '../restaurants/entities/restaurants.entity'
 import { GetPaymentsOutput } from './dtos/get-payments.dto'
-import { Cron } from '@nestjs/schedule'
+import { Interval } from '@nestjs/schedule'
 
 @Injectable()
 export class PaymentsService {
@@ -73,8 +73,17 @@ export class PaymentsService {
     }
   }
 
-  @Cron('30 * * * * *')
-  async checkForPayments() {
-    console.log('Checking For Payments...', new Date())
+  @Interval(5000)
+  async checkPromotedRestaurants() {
+    console.log('This is Interval => 5000')
+    const restaurants = await this.restaurants.find({
+      isPromoted: true,
+      promotedUntil: LessThan(new Date()),
+    })
+    for (const restaurant of restaurants) {
+      restaurant.isPromoted = false
+      restaurant.promotedUntil = null
+      await this.restaurants.save(restaurant)
+    }
   }
 }
