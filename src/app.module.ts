@@ -80,7 +80,6 @@ import { Payment } from './payments/entities/payment.entity'
         OrderItem,
       ],
       synchronize: process.env.NODE_ENV !== 'prod',
-      // synchronize: true,
       logging: process.env.NODE_ENV !== 'prod',
       migrationsRun: false,
     }),

@@ -18,7 +18,6 @@ import {
 } from '../common/common.constants'
 import { OrderUpdatesInput } from './dtos/order-updates.dto'
 import { TakeOrderInput, TakeOrderOutput } from './dtos/take-order.dto'
-import { DEFAULT_AUTHOR } from '@nestjs/schematics'
 
 @Resolver((of) => Order)
 export class OrdersResolver {

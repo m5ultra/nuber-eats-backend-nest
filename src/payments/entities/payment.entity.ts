@@ -8,9 +8,9 @@ import { Restaurant } from '../../restaurants/entities/restaurants.entity'
 @ObjectType()
 @Entity()
 export class Payment extends CoreEntity {
-  @Field((type) => Int)
+  @Field((type) => String)
   @Column()
-  transactionId: number
+  transactionId: string
 
   @Field((type) => User)
   @ManyToOne((type) => User, (user) => user.payments)
@@ -24,5 +24,6 @@ export class Payment extends CoreEntity {
   restaurant: Restaurant
 
   @RelationId((payment: Payment) => payment.restaurant)
+  @Field(() => Int)
   restaurantId: number
 }
