@@ -218,7 +218,7 @@ export class RestaurantsService {
         //   skip: (pageNum - 1) * pageSize,
         // })
         restaurants = await this.restaurants.query(
-          `SELECT * FROM restaurant LIMIT ${pageSize} OFFSET ${
+          `SELECT * FROM restaurant ORDER BY "isPromoted" DESC  LIMIT  ${pageSize} OFFSET ${
             (pageNum - 1) * pageSize
           }`,
         )
@@ -230,7 +230,9 @@ export class RestaurantsService {
       } else {
         // 查所有
         // restaurants = await this.restaurants.find()
-        restaurants = await this.restaurants.query(`select * from restaurant`)
+        restaurants = await this.restaurants.query(
+          `select * from restaurant ORDER BY isPromoted DESC`,
+        )
       }
 
       const totalPages =

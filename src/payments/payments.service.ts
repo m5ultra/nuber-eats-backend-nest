@@ -8,6 +8,8 @@ import {
 } from './dtos/create-payment.dto'
 import { User } from '../users/entities/user.entity'
 import { Restaurant } from '../restaurants/entities/restaurants.entity'
+import { GetPaymentsOutput } from './dtos/get-payments.dto'
+import { Cron } from '@nestjs/schedule'
 
 @Injectable()
 export class PaymentsService {
@@ -38,6 +40,13 @@ export class PaymentsService {
       await this.payments.save(
         this.payments.create({ transactionId, user: owner, restaurant }),
       )
+
+      restaurant.isPromoted = true
+      const date = new Date()
+      date.setDate(date.getDate() + 7)
+      restaurant.promotedUntil = date
+      await this.restaurants.save(restaurant)
+
       return {
         ok: true,
       }
@@ -47,5 +56,25 @@ export class PaymentsService {
         error: 'Could not create payment.',
       }
     }
+  }
+
+  async getPayments(user: User): Promise<GetPaymentsOutput> {
+    try {
+      const payments = await this.payments.find({ user: user })
+      return {
+        ok: true,
+        payments,
+      }
+    } catch (e) {
+      return {
+        ok: false,
+        error: 'Could not load payments',
+      }
+    }
+  }
+
+  @Cron('30 * * * * *')
+  async checkForPayments() {
+    console.log('Checking For Payments...', new Date())
   }
 }
